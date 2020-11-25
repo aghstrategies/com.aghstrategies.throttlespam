@@ -14,6 +14,25 @@ function throttlespam_civicrm_config(&$config) {
   _throttlespam_civix_civicrm_config($config);
 }
 
+function throttlespam_apiHelper($entity, $action, $params) {
+  $result = [];
+  try {
+     $result = civicrm_api3($entity, $action, $params);
+   }
+   catch (CiviCRM_API3_Exception $e) {
+     $error = $e->getMessage();
+     CRM_Core_Error::debug_log_message(ts('API Error %1', [
+       'domain' => 'com.aghstrategies.throttlespam',
+       1 => $error,
+     ]));
+     $result = [
+       'error_message' => $error,
+       'is_error' => 1,
+     ];
+   }
+   return $result;
+}
+
 /**
  * Implements hook_civicrm_xmlMenu().
  *

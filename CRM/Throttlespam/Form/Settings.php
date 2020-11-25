@@ -8,9 +8,8 @@ use CRM_Throttlespam_ExtensionUtil as E;
  * @see https://docs.civicrm.org/dev/en/latest/framework/quickform/
  */
 class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
-  public function buildQuickForm() {
-
-    $fields = [
+  public function settingsFields () {
+    return [
       'per_min' => [
         'label' => 'Per Minute',
         'name' => 'per_min',
@@ -54,6 +53,11 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'help_text' => "No more than X submissions of frontend contribution or event registration forms per hour when the most recent one failed",
       ],
     ];
+  }
+
+  public function buildQuickForm() {
+    $fields = $this->settingsFields();
+
     foreach ($fields as $name => $details) {
       // add form elements
       $this->add(
@@ -66,7 +70,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
     }
 
     // TODO set defaults
-    
+
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -75,22 +79,32 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
       ),
     ));
 
+    $getSettings = throttlespam_apiHelper('Setting', 'get', ['return' => ["throttlespam_preferences"]]);
+    if (isset($getSettings['values'][$getSettings['id']]['throttlespam_preferences'])) {
+      $this->setDefaults($getSettings['values'][$getSettings['id']]['throttlespam_preferences']);
+    }
+    
     // export form elements
     $this->assign('elementNames', $this->getRenderableElementNames());
     parent::buildQuickForm();
   }
 
-  public function getSettings() {
-
-  }
-
   public function postProcess() {
-    // TODO save settings
+    $settingsFields = $this->settingsFields();
     $values = $this->exportValues();
-    print_r($values); die();
-    CRM_Core_Session::setStatus(E::ts('You picked color "%1"', array(
-      1 => 1,
-    )));
+    $settingsToBeSet = [];
+    foreach ($values as $fieldName => $value) {
+      if (isset($settingsFields[$fieldName])) {
+        $settingsToBeSet[$fieldName] = $value;
+      }
+    }
+    $saveSettings = throttlespam_apiHelper('Setting', 'create', ['throttlespam_preferences' => $settingsToBeSet]);
+    if ($saveSettings['is_error'] == 0) {
+      CRM_Core_Session::setStatus(E::ts('Settings Saved'), 'Success', 'success');
+    }
+    else {
+      CRM_Core_Session::setStatus(E::ts('Settings NOT Saved'), 'Oops, something went wrong');
+    }
     parent::postProcess();
   }
 
