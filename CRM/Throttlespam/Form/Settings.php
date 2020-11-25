@@ -12,12 +12,14 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
     return [
       'per_min' => [
         'label' => 'Per Minute',
+        'sql_time' => 'interval 1 minute',
         'name' => 'per_min',
         'type' => text,
         'required' => TRUE,
         'help_text' => "No more than X submissions of frontend contribution or event registration forms per minute",
       ],
       'per_5_min' => [
+        'sql_time' => 'interval 5 minute',
         'label' => 'Per 5 Minutes',
         'name' => 'per_5_min',
         'type' => text,
@@ -25,6 +27,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'help_text' => "No more than X submissions of frontend contribution or event registration forms per five minutes",
       ],
       'per_hour' => [
+        'sql_time' => 'interval 60 minute',
         'label' => 'Per hour',
         'name' => 'per_hour',
         'type' => text,
@@ -32,6 +35,8 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'help_text' => "No more than X submissions of frontend contribution or event registration forms per hour",
       ],
       'per_min_fail' => [
+        'sql_time' => 'interval 1 minute',
+        'sql_where' => 'fail',
         'label' => 'Per Minute after the most recent one failed',
         'name' => 'per_min_fail',
         'type' => text,
@@ -39,6 +44,8 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'help_text' => "No more than X submissions of frontend contribution or event registration forms per minute when the most recent one failed",
       ],
       'per_min_5_fail' => [
+        'sql_time' => 'interval 5 minute',
+        'sql_where' => 'fail',
         'label' => 'Per 5 Minutes after the most recent one failed',
         'name' => 'per_min_5_fail',
         'type' => text,
@@ -46,6 +53,8 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'help_text' => "No more than X submissions of frontend contribution or event registration forms per 5 minutes when the most recent one failed",
       ],
       'per_hour_fail' => [
+        'sql_time' => 'interval 60 minute',
+        'sql_where' => 'fail',
         'label' => 'Per hour after the most recent one failed',
         'name' => 'per_hour_fail',
         'type' => text,
@@ -83,7 +92,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
     if (isset($getSettings['values'][$getSettings['id']]['throttlespam_preferences'])) {
       $this->setDefaults($getSettings['values'][$getSettings['id']]['throttlespam_preferences']);
     }
-    
+
     // export form elements
     $this->assign('elementNames', $this->getRenderableElementNames());
     parent::buildQuickForm();
