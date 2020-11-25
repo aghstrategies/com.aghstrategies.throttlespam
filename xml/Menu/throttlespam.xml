@@ -3,7 +3,7 @@
   <item>
     <path>civicrm/throttlespam/settings</path>
     <page_callback>CRM_Throttlespam_Form_Settings</page_callback>
-    <title>Settings</title>
+    <title>Throttle Spam Settings</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
 </menu>
