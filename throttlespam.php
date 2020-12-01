@@ -29,6 +29,19 @@ function throttlespam_civicrm_buildForm($formName, &$form) {
   }
 }
 
+/**
+ * Implements hook_civicrm_postProcess().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postProcess
+ */
+function throttlespam_civicrm_postProcess($formName, &$form) {
+  if ($formName == 'CRM_Contribute_Form_Contribution_Main' || $formName == 'CRM_Event_Form_Registration_Register') {
+    print_r($form); die();
+    $ip = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+    $saveIP = throttlespam_apiHelper('ThrottleSpamIp', 'create', ['ip_address' => $ip]);
+  }
+}
+
 // TODO check If IP is ok or should be banned
 function throttlespam_checkIP($ip) {
   $ipBlock = FALSE;

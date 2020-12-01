@@ -473,5 +473,11 @@ function _throttlespam_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NU
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
 function _throttlespam_civix_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes = array_merge($entityTypes, []);
+  $entityTypes = array_merge($entityTypes, [
+    'CRM_Throttlespam_DAO_ThrottleSpamIp' => [
+      'name' => 'ThrottleSpamIp',
+      'class' => 'CRM_Throttlespam_DAO_ThrottleSpamIp',
+      'table' => 'civicrm_throttlespam_ip',
+    ],
+  ]);
 }

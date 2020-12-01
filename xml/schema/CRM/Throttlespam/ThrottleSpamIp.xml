@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Throttlespam</base>
+  <class>ThrottleSpamIp</class>
+  <name>civicrm_throttlespam_ip</name>
+  <comment>FIXME</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique ThrottleSpamIp ID</comment>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>ip_address</name>
+    <title>IP Address</title>
+    <type>varchar</type>
+    <length>255</length>
+    <required>true</required>
+    <comment>IP address used</comment>
+  </field>
+  <index>
+    <name>index_ip_address</name>
+    <fieldName>ip_address</fieldName>
+  </index>
+
+  <field>
+    <name>access_date</name>
+    <type>timestamp</type>
+    <default>CURRENT_TIMESTAMP</default>
+    <required>true</required>
+    <comment>When the IP address accessed</comment>
+  </field>
+
+  <field>
+    <name>success</name>
+    <title>success</title>
+    <type>varchar</type>
+    <length>255</length>
+    <required>false</required>
+    <comment>Did the transaction go thru</comment>
+  </field>
+
+
+  <field>
+    <name>civicrm_financial_trxn_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Financial Trxn</comment>
+  </field>
+  <foreignKey>
+    <name>id</name>
+    <table>civicrm_financial_trxn</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+</table>
