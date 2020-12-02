@@ -16,7 +16,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'name' => 'per_min',
         'type' => text,
         'required' => FALSE,
-        'help_text' => "No more than X submissions of frontend contribution or event registration forms per minute",
+        'help_text' => "No more than X submissions of frontend contribution or event registration forms per minute per IP",
       ],
       'per_5_min' => [
         'sql_time' => 'interval 5 minute',
@@ -24,7 +24,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'name' => 'per_5_min',
         'type' => text,
         'required' => FALSE,
-        'help_text' => "No more than X submissions of frontend contribution or event registration forms per five minutes",
+        'help_text' => "No more than X submissions of frontend contribution or event registration forms per five minutes per IP",
       ],
       'per_hour' => [
         'sql_time' => 'interval 60 minute',
@@ -32,7 +32,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'name' => 'per_hour',
         'type' => text,
         'required' => FALSE,
-        'help_text' => "No more than X submissions of frontend contribution or event registration forms per hour",
+        'help_text' => "No more than X submissions of frontend contribution or event registration forms per hour per IP",
       ],
       'per_min_fail' => [
         'sql_time' => 'interval 1 minute',
@@ -41,7 +41,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'name' => 'per_min_fail',
         'type' => text,
         'required' => FALSE,
-        'help_text' => "No more than X submissions of frontend contribution or event registration forms per minute when the most recent one failed",
+        'help_text' => "No more than X failed submissions of frontend contribution or event registration forms per minute per IP",
       ],
       'per_min_5_fail' => [
         'sql_time' => 'interval 5 minute',
@@ -50,7 +50,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'name' => 'per_min_5_fail',
         'type' => text,
         'required' => FALSE,
-        'help_text' => "No more than X submissions of frontend contribution or event registration forms per 5 minutes when the most recent one failed",
+        'help_text' => "No more than X failed submissions of frontend contribution or event registration forms per 5 minutes per IP",
       ],
       'per_hour_fail' => [
         'sql_time' => 'interval 60 minute',
@@ -59,7 +59,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
         'name' => 'per_hour_fail',
         'type' => text,
         'required' => FALSE,
-        'help_text' => "No more than X submissions of frontend contribution or event registration forms per hour when the most recent one failed",
+        'help_text' => "No more than X failed submissions of frontend contribution or event registration forms per hour per IP",
       ],
     ];
   }
