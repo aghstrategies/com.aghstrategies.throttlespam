@@ -24,21 +24,18 @@ function throttlespam_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_Contribute_Form_Contribution_Main' || $formName == 'CRM_Event_Form_Registration_Register') {
     $ip = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
     if (throttlespam_checkIP($ip)) {
-      CRM_Utils_System::permissionDenied();
+      // CRM_Utils_System::permissionDenied();
     }
   }
 }
 
-/**
- * Implements hook_civicrm_postProcess().
- *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postProcess
- */
-function throttlespam_civicrm_postProcess($formName, &$form) {
-  if ($formName == 'CRM_Contribute_Form_Contribution_Main' || $formName == 'CRM_Event_Form_Registration_Register') {
-    print_r($form); die();
+function throttlespam_civicrm_post($op, $objectName, $objectId, &$objectRef) {
+  if ($objectName == 'Contribution' && $op == 'create') {
     $ip = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
-    $saveIP = throttlespam_apiHelper('ThrottleSpamIp', 'create', ['ip_address' => $ip]);
+    $saveIP = throttlespam_apiHelper('ThrottleSpamIp', 'create', [
+      'ip_address' => $ip,
+      'contribution_id' => $objectId,
+    ]);
   }
 }
 
@@ -52,9 +49,16 @@ function throttlespam_checkIP($ip) {
 
     foreach ($throttleSpamSettings as $scenario => $numberOfAttempts) {
       if (isset($settingsFields[$scenario]['sql_time'])) {
-        // TODO check based off logged IPs
-        // TODO check based off whether the submission went thru successfully or not
-        $sql = "select count(*) from civicrm_contribution where receive_date > date_sub(now(), {$settingsFields[$scenario]['sql_time']});";
+
+        // Only count failed attempts
+        if (isset($settingsFields[$scenario]['fails']) && $settingsFields[$scenario]['fails'] == TRUE) {
+          $sql = "SELECT count(*) from civicrm_throttlespam_ip JOIN civicrm_contribution on civicrm_throttlespam_ip.contribution_id = civicrm_contribution.id where ip_address = $ip AND civicrm_contribution.contribution_status_id = 4 AND access_date > date_sub(now(), {$settingsFields[$scenario]['sql_time']});";
+        }
+
+        // Count all attempts
+        else {
+          $sql = "SELECT count(*) from civicrm_throttlespam_ip where ip_address = $ip AND access_date > date_sub(now(), {$settingsFields[$scenario]['sql_time']});";
+        }
         $numberOfTries = CRM_Core_DAO::singleValueQuery($sql);
         if ($numberOfTries >= $numberOfAttempts) {
           $ipBlock = TRUE;

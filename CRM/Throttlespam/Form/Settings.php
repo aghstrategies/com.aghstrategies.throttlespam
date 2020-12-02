@@ -36,7 +36,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
       ],
       'per_min_fail' => [
         'sql_time' => 'interval 1 minute',
-        'sql_where' => 'fail',
+        'fails' => TRUE,
         'label' => 'Per Minute after the most recent one failed',
         'name' => 'per_min_fail',
         'type' => text,
@@ -45,7 +45,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
       ],
       'per_min_5_fail' => [
         'sql_time' => 'interval 5 minute',
-        'sql_where' => 'fail',
+        'fails' => TRUE,
         'label' => 'Per 5 Minutes after the most recent one failed',
         'name' => 'per_min_5_fail',
         'type' => text,
@@ -54,7 +54,7 @@ class CRM_Throttlespam_Form_Settings extends CRM_Core_Form {
       ],
       'per_hour_fail' => [
         'sql_time' => 'interval 60 minute',
-        'sql_where' => 'fail',
+        'fails' => TRUE,
         'label' => 'Per hour after the most recent one failed',
         'name' => 'per_hour_fail',
         'type' => text,

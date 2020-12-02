@@ -52,8 +52,7 @@ CREATE TABLE `civicrm_throttlespam_ip` (
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique ThrottleSpamIp ID',
      `ip_address` varchar(255) NOT NULL   COMMENT 'IP address used',
      `access_date` timestamp NOT NULL  DEFAULT CURRENT_TIMESTAMP COMMENT 'When the IP address accessed',
-     `success` varchar(255) NULL   COMMENT 'Did the transaction go thru',
-     `civicrm_financial_trxn_id` int unsigned    COMMENT 'FK to Financial Trxn' 
+     `contribution_id` int unsigned    COMMENT 'FK to Contribution' 
 ,
         PRIMARY KEY (`id`)
  
@@ -61,7 +60,7 @@ CREATE TABLE `civicrm_throttlespam_ip` (
         ip_address
   )
   
-,          CONSTRAINT FK_civicrm_throttlespam_ip_id FOREIGN KEY (`id`) REFERENCES `civicrm_financial_trxn`(`id`) ON DELETE CASCADE  
+,          CONSTRAINT FK_civicrm_throttlespam_ip_id FOREIGN KEY (`id`) REFERENCES `civicrm_contribution`(`id`) ON DELETE CASCADE  
 )    ;
 
  
