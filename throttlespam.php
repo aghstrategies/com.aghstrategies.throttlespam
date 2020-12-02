@@ -24,8 +24,8 @@ function throttlespam_civicrm_buildForm($formName, &$form) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_post
  */
-function throttlespam_civicrm_post($op, $objectName, $objectId, &$objectRef) {
-  if ($objectName == 'Contribution' && $op == 'create') {
+function throttlespam_civicrm_postCommit($op, $objectName, $objectId, &$objectRef) {
+	if ($objectName == 'Contribution' && $op == 'create') {
     $ip = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
     $saveIP = throttlespam_apiHelper('ThrottleSpamIp', 'create', [
       'ip_address' => $ip,
