@@ -1,15 +1,15 @@
 # com.aghstrategies.throttlespam
+Creates a settings page "Throttle Spam Settings" and adds it to the Menu (CiviCRM Admin Menu ->Administer ->Throttle Spam Settings).
+![settings page](/images/settings.png)
 
-![Screenshot](/images/screenshot.png)
-
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
+Blocks access to Front End Contribution and Event Registration Pages based on the users IP address and the settings.
 
 The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 ## Requirements
 
 * PHP v7.0+
-* CiviCRM (*FIXME: Version number*)
+* CiviCRM 5.31
 
 ## Installation (Web UI)
 
@@ -34,11 +34,3 @@ install it with the command-line tool [cv](https://github.com/civicrm/cv).
 git clone https://github.com/FIXME/com.aghstrategies.throttlespam.git
 cv en throttlespam
 ```
-
-## Usage
-
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
-
-## Known Issues
-
-(* FIXME *)
