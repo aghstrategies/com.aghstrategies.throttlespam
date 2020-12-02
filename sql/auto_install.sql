@@ -60,7 +60,7 @@ CREATE TABLE `civicrm_throttlespam_ip` (
         ip_address
   )
   
-,          CONSTRAINT FK_civicrm_throttlespam_ip_id FOREIGN KEY (`id`) REFERENCES `civicrm_contribution`(`id`) ON DELETE CASCADE  
+ 
 )    ;
 
  

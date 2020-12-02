@@ -44,11 +44,5 @@
     <type>int unsigned</type>
     <comment>FK to Contribution</comment>
   </field>
-  <foreignKey>
-    <name>id</name>
-    <table>civicrm_contribution</table>
-    <key>id</key>
-    <onDelete>CASCADE</onDelete>
-  </foreignKey>
 
 </table>
