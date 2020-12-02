@@ -6,29 +6,24 @@ use CRM_Throttlespam_ExtensionUtil as E;
 // phpcs:enable
 
 /**
- * Implements hook_civicrm_config().
- *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
- */
-function throttlespam_civicrm_config(&$config) {
-  _throttlespam_civix_civicrm_config($config);
-}
-
-/**
  * Implements hook_civicrm_buildForm().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_buildForm
  */
 function throttlespam_civicrm_buildForm($formName, &$form) {
-  // print_r($formName); die();
   if ($formName == 'CRM_Contribute_Form_Contribution_Main' || $formName == 'CRM_Event_Form_Registration_Register') {
     $ip = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
     if (throttlespam_checkIP($ip)) {
-      // CRM_Utils_System::permissionDenied();
+      CRM_Core_Error::statusBounce(ts('Permission Denied based on attempts from this IP'));
     }
   }
 }
 
+/**
+ * Implements hook_civicrm_post().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_post
+ */
 function throttlespam_civicrm_post($op, $objectName, $objectId, &$objectRef) {
   if ($objectName == 'Contribution' && $op == 'create') {
     $ip = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
@@ -39,7 +34,11 @@ function throttlespam_civicrm_post($op, $objectName, $objectId, &$objectRef) {
   }
 }
 
-// TODO check If IP is ok or should be banned
+/**
+ * Check if ip is good based on settings
+ * @param  string $ip ip address
+ * @return boolean     TRUE means block the ip
+ */
 function throttlespam_checkIP($ip) {
   $ipBlock = FALSE;
   $getSettings = throttlespam_apiHelper('Setting', 'get', ['return' => ["throttlespam_preferences"]]);
@@ -47,20 +46,21 @@ function throttlespam_checkIP($ip) {
     $throttleSpamSettings = $getSettings['values'][$getSettings['id']]['throttlespam_preferences'];
     $settingsFields = CRM_Throttlespam_Form_Settings::settingsFields();
 
-    foreach ($throttleSpamSettings as $scenario => $numberOfAttempts) {
-      if (isset($settingsFields[$scenario]['sql_time'])) {
+    foreach ($throttleSpamSettings as $scenario => $numberOfAllowedAttempts) {
+      if (isset($settingsFields[$scenario]['sql_time']) && is_string($numberOfAllowedAttempts) && strlen($numberOfAllowedAttempts) > 0) {
 
         // Only count failed attempts
         if (isset($settingsFields[$scenario]['fails']) && $settingsFields[$scenario]['fails'] == TRUE) {
-          $sql = "SELECT count(*) from civicrm_throttlespam_ip JOIN civicrm_contribution on civicrm_throttlespam_ip.contribution_id = civicrm_contribution.id where ip_address = $ip AND civicrm_contribution.contribution_status_id = 4 AND access_date > date_sub(now(), {$settingsFields[$scenario]['sql_time']});";
+          $sql = "SELECT count(*) from civicrm_throttlespam_ip JOIN civicrm_contribution on civicrm_throttlespam_ip.contribution_id = civicrm_contribution.id where ip_address = '$ip' AND civicrm_contribution.contribution_status_id = 4 AND access_date > date_sub(now(), {$settingsFields[$scenario]['sql_time']});";
         }
 
         // Count all attempts
         else {
-          $sql = "SELECT count(*) from civicrm_throttlespam_ip where ip_address = $ip AND access_date > date_sub(now(), {$settingsFields[$scenario]['sql_time']});";
+          $sql = "SELECT count(*) from civicrm_throttlespam_ip where ip_address = '$ip' AND access_date > date_sub(now(), {$settingsFields[$scenario]['sql_time']});";
         }
         $numberOfTries = CRM_Core_DAO::singleValueQuery($sql);
-        if ($numberOfTries >= $numberOfAttempts) {
+
+        if ($numberOfTries >= $numberOfAllowedAttempts) {
           $ipBlock = TRUE;
         }
       }
@@ -69,11 +69,13 @@ function throttlespam_checkIP($ip) {
   return $ipBlock;
 }
 
-// TODO log ip addresses
-function throttlespam_logIP() {
-
-}
-
+/**
+ * API wrapper function
+ * @param  string $entity API Entity
+ * @param  string $action API Action
+ * @param  array $params  API Params
+ * @return array          API Result
+ */
 function throttlespam_apiHelper($entity, $action, $params) {
   $result = [];
   try {
@@ -91,6 +93,15 @@ function throttlespam_apiHelper($entity, $action, $params) {
      ];
    }
    return $result;
+}
+
+/**
+ * Implements hook_civicrm_config().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
+ */
+function throttlespam_civicrm_config(&$config) {
+  _throttlespam_civix_civicrm_config($config);
 }
 
 /**
